@@ -1,0 +1,132 @@
+<?php
+
+/**
+ * @file
+ * Workflow participant hook implementations.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\content_moderation\ModerationStateTransitionInterface;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_form_BASE_ID_alter().
+ */
+function workflow_participants_form_moderation_state_transition_form_alter(array &$form, FormStateInterface $form_state) {
+  // Add editor and reviewer checkboxes.
+  /** @var \Drupal\content_moderation\ModerationStateTransitionInterface $transition */
+  $transition = $form_state->getFormObject()->getEntity();
+  $form['enable_editors'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Allow editors to make this transition'),
+    '#default_value' => $transition->getThirdPartySetting('workflow_participants', 'enable_editors', FALSE),
+  ];
+  $form['enable_reviewers'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Allow reviewers to make this transition'),
+    '#default_value' => $transition->getThirdPartySetting('workflow_participants', 'enable_reviewers', FALSE),
+  ];
+  $form['#entity_builders'][] = 'workflow_participants_moderation_state_transition_form_builder';
+}
+
+/**
+ * Form builder for the moderation transition state form.
+ *
+ * @see workflow_participants_form_moderation_state_transition_form_alter
+ */
+function workflow_participants_moderation_state_transition_form_builder($entity_type, ModerationStateTransitionInterface $transition, array &$form, FormStateInterface $form_state) {
+  $transition->setThirdPartySetting('workflow_participants', 'enable_editors', $form_state->getValue('enable_editors'));
+  $transition->setThirdPartySetting('workflow_participants', 'enable_reviewers', $form_state->getValue('enable_reviewers'));
+}
+
+/**
+ * @defgroup access_hooks Entity access hook implementations.
+ * @{
+ */
+
+/**
+ * Implements hook_entity_access().
+ */
+function workflow_participants_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if (!$entity instanceof ContentEntityInterface || !$entity->id()) {
+    return AccessResult::neutral();
+  }
+
+  return \Drupal::service('workflow_participants.access_checker')->hasEntityAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_node_access_records().
+ */
+function workflow_participants_node_access_records(NodeInterface $node) {
+  /** @var \Drupal\workflow_participants\Entity\WorkflowParticipantsInterface $participants */
+  $participants = \Drupal::entityTypeManager()->getStorage('workflow_participants')->loadForModeratedEntity($node);
+  $grants = [];
+
+  // Grant editors read/write access.
+  foreach ($participants->getEditorIds() as $editor) {
+    $grants[] = [
+      'realm' => 'workflow_participants_editors',
+      'gid' => $editor,
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 0,
+    ];
+  }
+
+  // Grant reviewers read access.
+  foreach ($participants->getReviewerIds() as $reviewer) {
+    $grants[] = [
+      'realm' => 'workflow_participants_reviewers',
+      'gid' => $reviewer,
+      'grant_view' => 1,
+      'grant_update' => 0,
+      'grant_delete' => 0,
+    ];
+  }
+
+  return $grants;
+}
+
+/**
+ * Implements hook_node_grants().
+ */
+function workflow_participants_node_grants(AccountInterface $account, $op) {
+  $grants = [];
+  if ($account->hasPermission('can be workflow participant')) {
+    if ($op === 'view') {
+      // Both editors and reviewers can view.
+      $grants['workflow_participants_editors'] = [$account->id()];
+      $grants['workflow_participants_reviewers'] = [$account->id()];
+    }
+    elseif ($op === 'update') {
+      $grants['workflow_participants_editors'] = [$account->id()];
+    }
+  }
+  return $grants;
+}
+
+/**
+ * @} End "defgroup access_hooks".
+ */
+
+/**
+ * Implements hook_entity_operation().
+ */
+function workflow_participants_entity_operation(EntityInterface $entity) {
+  // @todo Don't hard code for node.
+  $operations = [];
+  if ($entity instanceof NodeInterface) {
+    $operations['workflow-participants'] = [
+      'title' => t('Workflow participants'),
+      'url' => Url::fromRoute('entity.node.workflow_participants', ['node' => $entity->id()]),
+      'weight' => 27,
+    ];
+  }
+  return $operations;
+}

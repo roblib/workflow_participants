@@ -1,0 +1,19 @@
+services:
+  workflow_participants.access_checker:
+    class: Drupal\workflow_participants\Access\WorkflowParticipantsAccessChecker
+    arguments: ['@content_moderation.moderation_information', '@entity_type.manager']
+    tags:
+      - { name: access_check, applies_to: _workflow_participants_manage_access }
+  workflow_participants.latest_version_access:
+    class: Drupal\workflow_participants\Access\LatestVersionCheck
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: access_check, applies_to: _workflow_participants_latest_version }
+  workflow_participants.route_subscriber:
+    class: Drupal\workflow_participants\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  workflow_participants.state_transition_validation:
+    class: \Drupal\workflow_participants\StateTransitionValidation
+    decorates: content_moderation.state_transition_validation
+    arguments: ['@entity_type.manager', '@entity.query']

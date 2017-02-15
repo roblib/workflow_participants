@@ -1,0 +1,8 @@
+name: Workflow Participants
+type: module
+description: Allows for per-entity workflow participants (editors and reviewers) to be assigned.
+core: 8.x
+package: Content moderation
+dependencies:
+  - content_moderation
+  - dynamic_entity_reference
