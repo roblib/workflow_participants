@@ -118,7 +118,7 @@ class AdminUiTest extends TestBase {
     $participants = $this->participantStorage->loadUnchanged($participants->id());
     $this->assertEmpty($participants->getEditorIds());
     // For some reason, the front page redirects to the user page.
-    $this->assertSession()->addressEquals($editor->toUrl()->toString());
+    $this->assertSession()->addressEquals($editor->toUrl()->setAbsolute()->toString());
   }
 
   /**
