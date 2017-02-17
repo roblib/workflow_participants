@@ -2,6 +2,7 @@
 
 namespace Drupal\workflow_participants\Form;
 
+use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
@@ -148,8 +149,16 @@ class WorkflowParticipantsForm extends ContentEntityForm {
    */
   public function checkAccess(array $form, FormStateInterface $form_state) {
     $entity = $this->entity->getModeratedEntity();
+    // @todo Entity access to the workflow participants entity should work
+    // here, but that isn't sorted out. Instead call the route access callback.
+    $access_checker = \Drupal::service('workflow_participants.access_checker');
     if (!$entity->access('view')) {
       $form_state->setRedirect('<front>');
+    }
+    elseif (!$access_checker->access($this->currentUser(), $entity) instanceof AccessResultAllowed) {
+      // User might still have access to view, but not the tab. In this case,
+      // redirect to the entity.
+      $form_state->setRedirectUrl($entity->toUrl());
     }
   }
 

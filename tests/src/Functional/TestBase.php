@@ -81,6 +81,7 @@ abstract class TestBase extends BrowserTestBase {
     $role = $this->createRole([
       'can be workflow participant',
       'access user profiles',
+      'access content',
     ]);
 
     // Dummy admin user to avoid uid 1 super perms.

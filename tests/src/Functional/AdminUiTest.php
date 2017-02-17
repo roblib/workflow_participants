@@ -119,6 +119,25 @@ class AdminUiTest extends TestBase {
     $this->assertEmpty($participants->getEditorIds());
     // For some reason, the front page redirects to the user page.
     $this->assertSession()->addressEquals($editor->toUrl()->setAbsolute()->toString());
+
+    // Verify redirect to node page if user still has access to view.
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = \Drupal::entityTypeManager()->getStorage('node')->loadUnchanged($this->node->id());
+    $node->setPublished(TRUE);
+    $node->moderation_state = 'published';
+    $node->save();
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->statusCodeEquals(200);
+    $participants->editors->target_id = $editor->id();
+    $participants->save();
+    // Remove self and verify proper redirect.
+    $edit = [
+      'editors[0][target_id]' => '',
+    ];
+    $this->drupalPostForm('node/' . $node->id() . '/workflow-participants', $edit, t('Save'));
+    $participants = $this->participantStorage->loadUnchanged($participants->id());
+    $this->assertEmpty($participants->getEditorIds());
+    $this->assertSession()->addressEquals($this->node->toUrl()->setAbsolute()->toString());
   }
 
   /**

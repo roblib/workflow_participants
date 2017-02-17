@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\Tests\workflow_participants\Functional;
+
 use Drupal\content_moderation\Entity\ModerationStateTransition;
 
 /**
