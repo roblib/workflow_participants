@@ -68,14 +68,18 @@ class WorkflowParticipantsAccessChecker implements AccessInterface {
       // for editors and reviewers is controlled at the form level.
       $participants = $this->participantStorage->loadForModeratedEntity($node);
       if ($participants->isEditor($account) || $participants->isReviewer($account)) {
-        return AccessResult::allowed()->addCacheableDependency($node);
+        return AccessResult::allowed()->addCacheableDependency($node)->addCacheableDependency($participants);
       }
 
       // Allowed if user is the author and has appropriate permission.
       return AccessResult::allowedIfHasPermission($account, 'manage own workflow participants')->andIf(AccessResult::allowedIf($node->getOwnerId() == $account->id()))->addCacheableDependency($node);
     }
 
-    return AccessResult::forbidden()->addCacheableDependency($node);
+    $access = AccessResult::forbidden()->addCacheableDependency($node);
+    if (isset($participants)) {
+      $access->addCacheableDependency($participants);
+    }
+    return $access;
   }
 
   /**
@@ -100,7 +104,11 @@ class WorkflowParticipantsAccessChecker implements AccessInterface {
     $participants = $this->participantStorage->loadForModeratedEntity($entity);
     if (!$participants->id() || (empty($participants->getEditorIds()) && empty($participants->getReviewerIds()))) {
       // No participants.
-      return AccessResult::neutral();
+      $access = AccessResult::neutral();
+      if ($participants->id()) {
+        $access->addCacheableDependency($participants);
+      }
+      return $access;
     }
 
     if ($operation === 'view' && !$entity->isPublished()) {
@@ -114,7 +122,7 @@ class WorkflowParticipantsAccessChecker implements AccessInterface {
     }
 
     // Default to neutral.
-    return AccessResult::neutral();
+    return AccessResult::neutral()->addCacheableDependency($participants);
   }
 
 }

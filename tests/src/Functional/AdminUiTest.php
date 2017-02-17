@@ -98,6 +98,8 @@ class AdminUiTest extends TestBase {
 
     // Editor should have full UI access.
     $this->drupalLogin($editor);
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->linkExists(t('Workflow participants'));
     $this->drupalGet('node/' . $this->node->id() . '/workflow-participants');
     $this->assertSession()->statusCodeEquals(200);
     $edit = [
@@ -138,6 +140,7 @@ class AdminUiTest extends TestBase {
     $participants = $this->participantStorage->loadUnchanged($participants->id());
     $this->assertEmpty($participants->getEditorIds());
     $this->assertSession()->addressEquals($this->node->toUrl()->setAbsolute()->toString());
+    $this->assertSession()->linkNotExists(t('Workflow participants'));
   }
 
   /**
@@ -153,6 +156,8 @@ class AdminUiTest extends TestBase {
 
     // Login reviewer and verify limited access.
     $this->drupalLogin($reviewer);
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->linkExists(t('Workflow participants'));
     $this->drupalGet('node/' . $this->node->id() . '/workflow-participants');
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->buttonExists(t('Remove me as reviewer'));
