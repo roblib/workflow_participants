@@ -36,6 +36,7 @@ class NodeAccessGrantsTest extends KernelTestBase {
     'node',
     'system',
     'user',
+    'workflows',
     'workflow_participants',
     // These seem to be implicitly required by content creation trait.
     'filter',

@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\workflow_participants\Functional;
 
-use Drupal\content_moderation\Entity\ModerationStateTransition;
+use Drupal\workflows\Entity\Workflow;
 
 /**
  * Tests entity access for workflow participants.
@@ -104,10 +104,10 @@ class EntityAccessTest extends TestBase {
     $this->assertSession()->fieldNotExists(t('Moderate'));
 
     // Add an accessible transition.
-    /** @var \Drupal\content_moderation\ModerationStateTransitionInterface $transition */
-    $transition = ModerationStateTransition::load('draft_published');
-    $transition->setThirdPartySetting('workflow_participants', 'enable_reviewers', TRUE);
-    $transition->save();
+    /** @var \Drupal\workflows\WorkflowInterface $workflow */
+    $workflow = Workflow::load('editorial');
+    $workflow->setThirdPartySetting('workflow_participants', 'enable_reviewers', ['draft_published' => 'draft_published']);
+    $workflow->save();
 
     // Transition the node and post a log message.
     $this->drupalGet($this->node->toUrl('latest-version'));

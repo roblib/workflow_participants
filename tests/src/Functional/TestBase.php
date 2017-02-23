@@ -4,6 +4,7 @@ namespace Drupal\Tests\workflow_participants\Functional;
 
 use Drupal\simpletest\NodeCreationTrait;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\workflows\Entity\Workflow;
 
 /**
  * Base class for functional workflow participant tests.
@@ -68,10 +69,10 @@ abstract class TestBase extends BrowserTestBase {
 
     // Add a node type and enable content moderation.
     $node_type = $this->createContentType(['type' => 'article']);
-    $node_type->setThirdPartySetting('content_moderation', 'enabled', TRUE);
-    $node_type->setThirdPartySetting('content_moderation', 'allowed_moderation_states', ['draft', 'published']);
-    $node_type->setThirdPartySetting('content_moderation', 'default_moderation_state', 'draft');
-    $node_type->save();
+    /** @var \Drupal\workflows\WorkflowInterface $workflow */
+    $workflow = Workflow::load('editorial');
+    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', 'article');
+    $workflow->save();
 
     $this->node = $this->createNode([
       'type' => 'article',

@@ -1,10 +1,16 @@
-content_moderation.state_transition.*.third_party.workflow_participants:
+workflows.workflow.*.third_party.workflow_participants:
   type: mapping
-  label: 'Enable workflow participants for this transition'
+  label: 'Workflow transitions that participants can make'
   mapping:
     enable_editors:
-      type: boolean
+      type: sequence
       label: 'Enable editors'
+      sequence:
+        type: string
+        label: 'Transition'
     enable_reviewers:
-      type: boolean
+      type: sequence
       label: 'Enable reviewers'
+      sequence:
+        type: string
+        label: 'Transition'

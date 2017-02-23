@@ -11,6 +11,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeAccessControlHandlerInterface;
+use Drupal\workflows\TransitionInterface;
+use Drupal\workflows\WorkflowInterface;
 
 /**
  * Defines the Workflow participants entity.
@@ -195,14 +197,17 @@ class WorkflowParticipants extends ContentEntityBase implements WorkflowParticip
   /**
    * {@inheritdoc}
    */
-  public function userMayTransition(ModerationStateTransitionInterface $transition, AccountInterface $account) {
+  public function userMayTransition(WorkflowInterface $workflow, TransitionInterface $transition, AccountInterface $account) {
+    // Allowed state transitions are stored on the workflow entity, since the
+    // transition object isn't a config entity.
+    $editor_transitions = $workflow->getThirdPartySetting('workflow_participants', 'editor_transitions', []);
+    $reviewer_transitions = $workflow->getThirdPartySetting('workflow_participants', 'reviewer_transtions', []);
+
     return (
       // Editors can make this transition, and account is an editor.
-      ($transition->getThirdPartySetting('workflow_participants', 'enable_editors', FALSE)
-        && $this->isEditor($account))
+      (in_array($transition->id(), $editor_transitions) && $this->isEditor($account))
       // Reviewers can make this transition, and the account is a reviewer.
-      || ($transition->getThirdPartySetting('workflow_participants', 'enable_reviewers', FALSE)
-        && $this->isReviewer($account)));
+      || (in_array($transition->id(), $reviewer_transitions) && $this->isReviewer($account)));
   }
 
   /**

@@ -13,23 +13,25 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\content_moderation\ModerationStateTransitionInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\workflows\WorkflowInterface;
 
 /**
  * Implements hook_form_BASE_ID_alter().
  */
-function workflow_participants_form_moderation_state_transition_form_alter(array &$form, FormStateInterface $form_state) {
+function workflow_participants_form_workflow_edit_transition_form_alter(array &$form, FormStateInterface $form_state) {
   // Add editor and reviewer checkboxes.
-  /** @var \Drupal\content_moderation\ModerationStateTransitionInterface $transition */
-  $transition = $form_state->getFormObject()->getEntity();
+  /** @var \Drupal\workflows\WorkflowInterface $workflow */
+  $workflow = $form_state->getFormObject()->getEntity();
+  $transition_id = isset($form['id']['#value']) ? $form['id']['#value'] : '';
   $form['enable_editors'] = [
     '#type' => 'checkbox',
     '#title' => t('Allow editors to make this transition'),
-    '#default_value' => $transition->getThirdPartySetting('workflow_participants', 'enable_editors', FALSE),
+    '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_editors', [])),
   ];
   $form['enable_reviewers'] = [
     '#type' => 'checkbox',
     '#title' => t('Allow reviewers to make this transition'),
-    '#default_value' => $transition->getThirdPartySetting('workflow_participants', 'enable_reviewers', FALSE),
+    '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_reviewers', [])),
   ];
   $form['#entity_builders'][] = 'workflow_participants_moderation_state_transition_form_builder';
 }
@@ -39,9 +41,18 @@ function workflow_participants_form_moderation_state_transition_form_alter(array
  *
  * @see workflow_participants_form_moderation_state_transition_form_alter
  */
-function workflow_participants_moderation_state_transition_form_builder($entity_type, ModerationStateTransitionInterface $transition, array &$form, FormStateInterface $form_state) {
-  $transition->setThirdPartySetting('workflow_participants', 'enable_editors', $form_state->getValue('enable_editors'));
-  $transition->setThirdPartySetting('workflow_participants', 'enable_reviewers', $form_state->getValue('enable_reviewers'));
+function workflow_participants_moderation_state_transition_form_builder($entity_type, WorkflowInterface $workflow, array &$form, FormStateInterface $form_state) {
+  $transition_id = $form_state->getValue('id');
+  foreach (['enable_editors', 'enable_reviewers'] as $enabled) {
+    $transitions = $workflow->getThirdPartySetting('workflow_participants', $enabled, []);
+    if ($form_state->getValue($enabled)) {
+      $transitions[$transition_id] = $transition_id;
+    }
+    else {
+      unset($transitions[$transition_id]);
+    }
+    $workflow->setThirdPartySetting('workflow_participants', $enabled, $transitions);
+  }
 }
 
 /**

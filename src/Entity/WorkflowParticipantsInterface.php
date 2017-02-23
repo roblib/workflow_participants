@@ -5,6 +5,8 @@ namespace Drupal\workflow_participants\Entity;
 use Drupal\content_moderation\ModerationStateTransitionInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\workflows\TransitionInterface;
+use Drupal\workflows\WorkflowInterface;
 
 /**
  * Provides an interface for defining Workflow participants entities.
@@ -56,15 +58,20 @@ interface WorkflowParticipantsInterface extends ContentEntityInterface {
   /**
    * Determine if a user has access to the transition.
    *
-   * @param \Drupal\content_moderation\ModerationStateTransitionInterface $transition
-   *   The state transition object.
+   * @param \Drupal\workflows\WorkflowInterface $workflow
+   *   The workflow associated with the entity.
+   * @param \Drupal\workflows\TransitionInterface $transition
+   *   The state transition.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The current user.
    *
-   * @return bool
+   * @return bool Returns TRUE if the user can make the transition.
    *   Returns TRUE if the user can make the transition.
+   *
+   * The workflow needs to be passed in since that is where the third party
+   * settings are stored for each transition.
    */
-  public function userMayTransition(ModerationStateTransitionInterface $transition, AccountInterface $account);
+  public function userMayTransition(WorkflowInterface $workflow, TransitionInterface $transition, AccountInterface $account);
 
   /**
    * Determine if the user is an editor.
