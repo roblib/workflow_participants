@@ -61,57 +61,6 @@ function workflow_participants_entity_access(EntityInterface $entity, $operation
 }
 
 /**
- * Implements hook_node_access_records().
- */
-function workflow_participants_node_access_records(NodeInterface $node) {
-  /** @var \Drupal\workflow_participants\Entity\WorkflowParticipantsInterface $participants */
-  $participants = \Drupal::entityTypeManager()->getStorage('workflow_participants')->loadForModeratedEntity($node);
-  $grants = [];
-
-  // Grant editors read/write access.
-  foreach ($participants->getEditorIds() as $editor) {
-    $grants[] = [
-      'realm' => 'workflow_participants_editors',
-      'gid' => $editor,
-      'grant_view' => 1,
-      'grant_update' => 1,
-      'grant_delete' => 0,
-    ];
-  }
-
-  // Grant reviewers read access.
-  foreach ($participants->getReviewerIds() as $reviewer) {
-    $grants[] = [
-      'realm' => 'workflow_participants_reviewers',
-      'gid' => $reviewer,
-      'grant_view' => 1,
-      'grant_update' => 0,
-      'grant_delete' => 0,
-    ];
-  }
-
-  return $grants;
-}
-
-/**
- * Implements hook_node_grants().
- */
-function workflow_participants_node_grants(AccountInterface $account, $op) {
-  $grants = [];
-  if ($account->hasPermission('can be workflow participant')) {
-    if ($op === 'view') {
-      // Both editors and reviewers can view.
-      $grants['workflow_participants_editors'] = [$account->id()];
-      $grants['workflow_participants_reviewers'] = [$account->id()];
-    }
-    elseif ($op === 'update') {
-      $grants['workflow_participants_editors'] = [$account->id()];
-    }
-  }
-  return $grants;
-}
-
-/**
  * @} End "defgroup access_hooks".
  */
 
