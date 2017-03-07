@@ -107,7 +107,7 @@ class StateTransitionValidation extends ContentModerationBase {
       $destination_ids = array_intersect($states_for_bundle, $all_transitions[$current_state->id()]);
       $destinations = $this->entityTypeManager->getStorage('moderation_state')->loadMultiple($destination_ids);
 
-      return array_filter($destinations, function(ModerationStateInterface $destination_state) use ($current_state, $account, $participants) {
+      return array_filter($destinations, function (ModerationStateInterface $destination_state) use ($current_state, $account, $participants) {
         $transition = $this->getTransitionFromStates($current_state, $destination_state);
         return $participants->userMayTransition($transition, $account);
       });
@@ -153,7 +153,7 @@ class StateTransitionValidation extends ContentModerationBase {
     // filtered by those whose target is legal on this bundle and that the
     // user has access to execute.
     $participants = $this->participantStorage->loadForModeratedEntity($entity);
-    $transitions = array_filter($this->getTransitionsFrom($current_state_id), function(ModerationStateTransition $transition) use ($legal_bundle_states, $account, $participants) {
+    $transitions = array_filter($this->getTransitionsFrom($current_state_id), function (ModerationStateTransition $transition) use ($legal_bundle_states, $account, $participants) {
       return in_array($transition->getToState(), $legal_bundle_states, TRUE)
         && $participants->userMayTransition($transition, $account);
     });

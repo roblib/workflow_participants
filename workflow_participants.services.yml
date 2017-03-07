@@ -9,6 +9,11 @@ services:
     arguments: ['@entity_type.manager']
     tags:
       - { name: access_check, applies_to: _workflow_participants_latest_version }
+  workflow_participants.revision_access:
+    class: Drupal\workflow_participants\Access\RevisionCheck
+    arguments: ['@entity_type.manager', '@access_check.node.revision']
+    tags:
+      - { name: access_check, applies_to: _workflow_participants_revision }
   workflow_participants.route_subscriber:
     class: Drupal\workflow_participants\Routing\RouteSubscriber
     tags:

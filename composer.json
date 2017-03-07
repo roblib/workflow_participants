@@ -10,5 +10,10 @@
     "issues": "https://www.drupal.org/project/issues/workflow_participants",
     "source": "http://cgit.drupalcode.org/workflow_participants"
   },
-  "require": { }
+  "require": {
+    "drupal/dynamic_entity_reference": "^2.0"
+  },
+  "require-dev": {
+    "drupal/diff": "^1.0"
+  }
 }
