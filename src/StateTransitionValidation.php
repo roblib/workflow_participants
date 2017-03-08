@@ -62,7 +62,7 @@ class StateTransitionValidation extends ContentModerationBase {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The current authenticated user.
    *
-   * @return \Drupal\content_moderation\ModerationStateTransitionInterface[]
+   * @return \Drupal\workflows\TransitionInterface[]
    *   The allowed state transitions.
    */
   protected function getParticipantTransitions(ContentEntityInterface $entity, AccountInterface $account) {
