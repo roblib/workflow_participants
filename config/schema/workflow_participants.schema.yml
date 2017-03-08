@@ -2,13 +2,13 @@ workflows.workflow.*.third_party.workflow_participants:
   type: mapping
   label: 'Workflow transitions that participants can make'
   mapping:
-    enable_editors:
+    editor_transitions:
       type: sequence
       label: 'Enable editors'
       sequence:
         type: string
         label: 'Transition'
-    enable_reviewers:
+    reviewer_transitions:
       type: sequence
       label: 'Enable reviewers'
       sequence:

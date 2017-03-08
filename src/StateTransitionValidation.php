@@ -79,7 +79,7 @@ class StateTransitionValidation extends ContentModerationBase {
     // user has access to execute.
     $participants = $this->participantStorage->loadForModeratedEntity($entity);
     $transitions = array_filter($current_state->getTransitions(), function (TransitionInterface $transition) use ($workflow, $participants, $account) {
-      $participants->userMayTransition($workflow, $transition, $account);
+      return $participants->userMayTransition($workflow, $transition, $account);
     });
 
     return $transitions;

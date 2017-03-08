@@ -200,7 +200,7 @@ class WorkflowParticipants extends ContentEntityBase implements WorkflowParticip
     // Allowed state transitions are stored on the workflow entity, since the
     // transition object isn't a config entity.
     $editor_transitions = $workflow->getThirdPartySetting('workflow_participants', 'editor_transitions', []);
-    $reviewer_transitions = $workflow->getThirdPartySetting('workflow_participants', 'reviewer_transtions', []);
+    $reviewer_transitions = $workflow->getThirdPartySetting('workflow_participants', 'reviewer_transitions', []);
 
     return (
       // Editors can make this transition, and account is an editor.

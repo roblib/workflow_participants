@@ -61,8 +61,8 @@ class EntityAccessTest extends TestBase {
     /** @var \Drupal\content_moderation\ModerationStateTransitionInterface $transition */
     /** @var \Drupal\workflows\WorkflowInterface $workflow */
     $workflow = Workflow::load('editorial');
-    $workflow->setThirdPartySetting('workflow_participants', 'enable_editors', ['draft_published' => 'draft_published']);
-    $workflow->setThirdPartySetting('workflow_participants', 'enable_reviewers', ['draft_published' => 'draft_published']);
+    $workflow->setThirdPartySetting('workflow_participants', 'editor_transitions', ['publish' => 'publish']);
+    $workflow->setThirdPartySetting('workflow_participants', 'reviewer_transitions', ['publish' => 'publish']);
     $workflow->save();
 
     // User should now have edit access.
@@ -107,7 +107,7 @@ class EntityAccessTest extends TestBase {
     // Add an accessible transition.
     /** @var \Drupal\workflows\WorkflowInterface $workflow */
     $workflow = Workflow::load('editorial');
-    $workflow->setThirdPartySetting('workflow_participants', 'enable_reviewers', ['draft_published' => 'draft_published']);
+    $workflow->setThirdPartySetting('workflow_participants', 'reviewer_transitions', ['publish' => 'publish']);
     $workflow->save();
 
     // Transition the node and post a log message.

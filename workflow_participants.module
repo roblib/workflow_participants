@@ -22,12 +22,12 @@ function workflow_participants_form_workflow_edit_transition_form_alter(array &$
   /** @var \Drupal\workflows\WorkflowInterface $workflow */
   $workflow = $form_state->getFormObject()->getEntity();
   $transition_id = isset($form['id']['#value']) ? $form['id']['#value'] : '';
-  $form['enable_editors'] = [
+  $form['editor_transitions'] = [
     '#type' => 'checkbox',
     '#title' => t('Allow editors to make this transition'),
     '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_editors', [])),
   ];
-  $form['enable_reviewers'] = [
+  $form['reviewer_transitions'] = [
     '#type' => 'checkbox',
     '#title' => t('Allow reviewers to make this transition'),
     '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_reviewers', [])),
@@ -42,7 +42,7 @@ function workflow_participants_form_workflow_edit_transition_form_alter(array &$
  */
 function workflow_participants_moderation_state_transition_form_builder($entity_type, WorkflowInterface $workflow, array &$form, FormStateInterface $form_state) {
   $transition_id = $form_state->getValue('id');
-  foreach (['enable_editors', 'enable_reviewers'] as $enabled) {
+  foreach (['editor_transitions', 'reviewer_transitions'] as $enabled) {
     $transitions = $workflow->getThirdPartySetting('workflow_participants', $enabled, []);
     if ($form_state->getValue($enabled)) {
       $transitions[$transition_id] = $transition_id;
