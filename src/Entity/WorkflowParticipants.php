@@ -2,7 +2,6 @@
 
 namespace Drupal\workflow_participants\Entity;
 
-use Drupal\content_moderation\ModerationStateTransitionInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;

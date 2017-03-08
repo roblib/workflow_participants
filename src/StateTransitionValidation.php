@@ -2,13 +2,10 @@
 
 namespace Drupal\workflow_participants;
 
-use Drupal\content_moderation\Entity\ModerationStateTransition;
 use Drupal\content_moderation\ModerationInformationInterface;
-use Drupal\content_moderation\ModerationStateInterface;
 use Drupal\content_moderation\StateTransitionValidation as ContentModerationBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\workflows\TransitionInterface;
 

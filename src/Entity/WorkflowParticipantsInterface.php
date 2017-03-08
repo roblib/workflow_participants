@@ -2,7 +2,6 @@
 
 namespace Drupal\workflow_participants\Entity;
 
-use Drupal\content_moderation\ModerationStateTransitionInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\workflows\TransitionInterface;
@@ -68,8 +67,8 @@ interface WorkflowParticipantsInterface extends ContentEntityInterface {
    * @return bool Returns TRUE if the user can make the transition.
    *   Returns TRUE if the user can make the transition.
    *
-   * The workflow needs to be passed in since that is where the third party
-   * settings are stored for each transition.
+   *   The workflow needs to be passed in since that is where the third party
+   *   settings are stored for each transition.
    */
   public function userMayTransition(WorkflowInterface $workflow, TransitionInterface $transition, AccountInterface $account);
 
