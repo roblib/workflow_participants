@@ -59,10 +59,11 @@ class EntityAccessTest extends TestBase {
 
     // Add an accessible transition.
     /** @var \Drupal\content_moderation\ModerationStateTransitionInterface $transition */
-    $transition = ModerationStateTransition::load('draft_published');
-    $transition->setThirdPartySetting('workflow_participants', 'enable_editors', TRUE);
-    $transition->setThirdPartySetting('workflow_participants', 'enable_reviewers', TRUE);
-    $transition->save();
+    /** @var \Drupal\workflows\WorkflowInterface $workflow */
+    $workflow = Workflow::load('editorial');
+    $workflow->setThirdPartySetting('workflow_participants', 'enable_editors', ['draft_published' => 'draft_published']);
+    $workflow->setThirdPartySetting('workflow_participants', 'enable_reviewers', ['draft_published' => 'draft_published']);
+    $workflow->save();
 
     // User should now have edit access.
     $this->drupalGet($this->node->toUrl('edit-form'));
