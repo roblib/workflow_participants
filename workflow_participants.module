@@ -89,3 +89,18 @@ function workflow_participants_entity_operation(EntityInterface $entity) {
   }
   return $operations;
 }
+
+/**
+ * Implements hook_entity_delete().
+ */
+function workflow_participants_entity_delete(EntityInterface $entity) {
+  if ($entity instanceof ContentEntityInterface) {
+    // Remove corresponding participants entity when the moderated entity is
+    // deleted.
+    /** @var \Drupal\workflow_participants\Entity\WorkflowParticipantsInterface $participants */
+    $participants = \Drupal::entityTypeManager()->getStorage('workflow_participants')->loadForModeratedEntity($entity);
+    if (!$participants->isNew()) {
+      $participants->delete();
+    }
+  }
+}
