@@ -6,9 +6,8 @@ services:
       - { name: access_check, applies_to: _workflow_participants_manage_access }
   workflow_participants.latest_version_access:
     class: Drupal\workflow_participants\Access\LatestVersionCheck
-    arguments: ['@entity_type.manager']
-    tags:
-      - { name: access_check, applies_to: _workflow_participants_latest_version }
+    arguments: ['@workflow_participants.latest_version_access.inner', '@entity_type.manager']
+    decorates: access_check.latest_revision
   workflow_participants.revision_access:
     class: Drupal\workflow_participants\Access\RevisionCheck
     arguments: ['@entity_type.manager', '@access_check.node.revision']

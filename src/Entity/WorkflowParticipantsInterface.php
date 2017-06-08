@@ -64,7 +64,7 @@ interface WorkflowParticipantsInterface extends ContentEntityInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The current user.
    *
-   * @return bool Returns TRUE if the user can make the transition.
+   * @return bool
    *   Returns TRUE if the user can make the transition.
    *
    *   The workflow needs to be passed in since that is where the third party

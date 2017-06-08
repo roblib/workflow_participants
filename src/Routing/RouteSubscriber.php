@@ -29,15 +29,6 @@ class RouteSubscriber implements EventSubscriberInterface {
   public function alterRoutes(RouteBuildEvent $event) {
     // @todo This is hard-coded for nodes.
     $collection = $event->getRouteCollection();
-    if ($route = $collection->get('entity.node.latest_version')) {
-      $route->setRequirement('_workflow_participants_latest_version', 'TRUE');
-
-      // Unset the permission check. These permissions are checked in the new
-      // requirement added above.
-      $requirements = $route->getRequirements();
-      unset($requirements['_permission']);
-      $route->setRequirements($requirements);
-    }
 
     // Revision history tab.
     if ($route = $collection->get('entity.node.version_history')) {
