@@ -68,7 +68,8 @@ abstract class TestBase extends BrowserTestBase {
     $this->placeBlock('local_tasks_block');
 
     // Add a node type and enable content moderation.
-    $node_type = $this->createContentType(['type' => 'article']);
+    $this->createContentType(['type' => 'article']);
+
     /** @var \Drupal\workflows\WorkflowInterface $workflow */
     $workflow = Workflow::load('editorial');
     $workflow->getTypePlugin()->addEntityTypeAndBundle('node', 'article');
@@ -76,6 +77,7 @@ abstract class TestBase extends BrowserTestBase {
 
     $this->node = $this->createNode([
       'type' => 'article',
+      'moderation_state' => 'draft',
     ]);
 
     // Setup a role that can be participants.

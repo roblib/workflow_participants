@@ -92,6 +92,9 @@ class AdminUiTest extends TestBase {
    */
   public function testEditorUi() {
     $editor = $this->participants[2];
+
+    // User should not have view access prior to being a participant.
+    $this->assertFalse($this->node->access('view', $editor));
     $participants = $this->participantStorage->loadForModeratedEntity($this->node);
     $participants->editors[0] = $editor;
     $participants->save();

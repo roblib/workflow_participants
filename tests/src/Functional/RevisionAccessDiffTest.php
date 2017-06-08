@@ -30,7 +30,7 @@ class RevisionAccessDiffTest extends RevisionAccessTest {
 
     $compare = [
       'radios_left' => 1,
-      'radios_right' => 2,
+      'radios_right' => 3,
     ];
     $this->drupalPostForm(NULL, $compare, t('Compare selected revisions'));
     $this->assertSession()->statusCodeEquals(200);
