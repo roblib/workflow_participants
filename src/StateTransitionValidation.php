@@ -18,11 +18,11 @@ use Drupal\workflows\TransitionInterface;
 class StateTransitionValidation extends ContentModerationBase {
 
   /**
-   * Workflow participant storage.
+   * The entity type manager.
    *
-   * @var \Drupal\workflow_participants\WorkflowParticipantsStorageInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $participantStorage;
+  protected $entityTypeManager;
 
   /**
    * Constructs the state transition validator.
@@ -40,7 +40,7 @@ class StateTransitionValidation extends ContentModerationBase {
    */
   public function __construct(ModerationInformationInterface $moderation_information, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($moderation_information);
-    $this->participantStorage = $entity_type_manager->getStorage('workflow_participants');
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -77,7 +77,7 @@ class StateTransitionValidation extends ContentModerationBase {
     // Legal transitions include those that are possible from the current state,
     // filtered by those whose target is legal on this bundle and that the
     // user has access to execute.
-    $participants = $this->participantStorage->loadForModeratedEntity($entity);
+    $participants = $this->entityTypeManager->getStorage('workflow_participants')->loadForModeratedEntity($entity);
     $transitions = array_filter($current_state->getTransitions(), function (TransitionInterface $transition) use ($workflow, $participants, $account) {
       return $participants->userMayTransition($workflow, $transition, $account);
     });
