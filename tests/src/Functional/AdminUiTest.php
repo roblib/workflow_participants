@@ -3,6 +3,7 @@
 namespace Drupal\Tests\workflow_participants\Functional;
 
 use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
+use Drupal\workflows\Entity\Workflow;
 
 /**
  * Tests for the admin UI of workflow participants.
@@ -10,6 +11,47 @@ use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
  * @group workflow_participants
  */
 class AdminUiTest extends TestBase {
+
+  /**
+   * Tests admin configuration UI.
+   */
+  public function testAdminConfiguration() {
+    // Verify 3rd-party settings work for transitions on edit form.
+    $expected = [
+      'archive' => 'archive',
+      'create_new_draft' => 'create_new_draft',
+    ];
+    foreach ($expected as $transition) {
+      $this->drupalGet('admin/config/workflow/workflows/manage/editorial/transition/' . $transition);
+      $edit = [
+        'editor_transitions' => TRUE,
+        'reviewer_transitions' => $transition === 'archive',
+      ];
+      $this->drupalPostForm(NULL, $edit, t('Save'));
+    }
+
+    // Load the workflow and verify 3rd-party setting.
+    /** @var \Drupal\workflows\WorkflowInterface $workflow */
+    $workflow = Workflow::load('editorial');
+    $this->assertEquals($expected, $workflow->getThirdPartySetting('workflow_participants', 'editor_transitions', []));
+    $this->assertEquals(['archive' => 'archive'], $workflow->getThirdPartySetting('workflow_participants', 'reviewer_transitions', []));
+
+    // Test on transition add form.
+    $workflow->getTypePlugin()->addState('foo', 'Foo');
+    $workflow->save();
+    $this->drupalGet('admin/config/workflow/workflows/manage/editorial/add_transition');
+    $edit = [
+      'label' => 'Foo',
+      'id' => 'draft_foo',
+      'from[draft]' => TRUE,
+      'to' => 'foo',
+      'editor_transitions' => TRUE,
+    ];
+    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $expected['draft_foo'] = 'draft_foo';
+    $workflow = Workflow::load('editorial');
+    $this->assertEquals($expected, $workflow->getThirdPartySetting('workflow_participants', 'editor_transitions', []));
+  }
 
   /**
    * Test basic workflow participants.

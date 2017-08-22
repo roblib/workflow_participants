@@ -12,46 +12,33 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
-use Drupal\workflows\WorkflowInterface;
+use Drupal\workflow_participants\EntityOperations;
 
 /**
  * Implements hook_form_BASE_ID_alter().
  */
-function workflow_participants_form_workflow_edit_transition_form_alter(array &$form, FormStateInterface $form_state) {
-  // Add editor and reviewer checkboxes.
-  /** @var \Drupal\workflows\WorkflowInterface $workflow */
-  $workflow = $form_state->getFormObject()->getEntity();
-  $transition_id = isset($form['id']['#value']) ? $form['id']['#value'] : '';
-  $form['editor_transitions'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Allow editors to make this transition'),
-    '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_editors', [])),
-  ];
-  $form['reviewer_transitions'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Allow reviewers to make this transition'),
-    '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_reviewers', [])),
-  ];
-  $form['#entity_builders'][] = 'workflow_participants_moderation_state_transition_form_builder';
+function workflow_participants_form_workflow_transition_add_form_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityOperations::class)
+    ->alterWorkflowTransitionsForm($form, $form_state);
 }
 
 /**
- * Form builder for the moderation transition state form.
- *
- * @see workflow_participants_form_moderation_state_transition_form_alter
+ * Implements hook_form_BASE_ID_alter().
  */
-function workflow_participants_moderation_state_transition_form_builder($entity_type, WorkflowInterface $workflow, array &$form, FormStateInterface $form_state) {
-  $transition_id = $form_state->getValue('id');
-  foreach (['editor_transitions', 'reviewer_transitions'] as $enabled) {
-    $transitions = $workflow->getThirdPartySetting('workflow_participants', $enabled, []);
-    if ($form_state->getValue($enabled)) {
-      $transitions[$transition_id] = $transition_id;
-    }
-    else {
-      unset($transitions[$transition_id]);
-    }
-    $workflow->setThirdPartySetting('workflow_participants', $enabled, $transitions);
-  }
+function workflow_participants_form_workflow_transition_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityOperations::class)
+    ->alterWorkflowTransitionsForm($form, $form_state);
+}
+
+/**
+ * Implements hook_form_BASE_ID_alter().
+ */
+function workflow_participants_form_content_moderation_notification_form_alter(array &$form, FormStateInterface $form_state) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityOperations::class)
+    ->alterNotificationsForm($form, $form_state);
 }
 
 /**
@@ -103,4 +90,13 @@ function workflow_participants_entity_delete(EntityInterface $entity) {
       $participants->delete();
     }
   }
+}
+
+/**
+ * Implements hook_content_moderation_notification_mail_data_alter().
+ */
+function workflow_participants_content_moderation_notification_mail_data_alter(EntityInterface $entity, array &$data) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityOperations::class)
+    ->alterNotificationRecipients($entity, $data);
 }

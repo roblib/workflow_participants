@@ -7,4 +7,5 @@ dependencies:
   - content_moderation:content_moderation
   - dynamic_entity_reference:dynamic_entity_reference
 test_dependencies:
+  - content_moderation_notifications:content_moderation_notifications (3.x)
   - diff:diff

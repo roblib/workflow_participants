@@ -14,3 +14,15 @@ workflows.workflow.*.third_party.workflow_participants:
       sequence:
         type: string
         label: 'Transition'
+
+# 3rd-party settings for content_moderation_notifications integration.
+content_moderation_notifications.content_moderation_notification.*.third_party.workflow_participants:
+  type: mapping
+  label: 'Participant notifications'
+  mapping:
+    editors:
+      type: boolean
+      label: 'Editors'
+    reviewers:
+      type: boolean
+      label: 'Reviewers'

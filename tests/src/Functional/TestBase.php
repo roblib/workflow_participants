@@ -91,6 +91,7 @@ abstract class TestBase extends BrowserTestBase {
     $this->createUser();
     // Real admin user.
     $this->adminUser = $this->createUser([
+      'administer workflows',
       'manage workflow participants',
       'administer nodes',
       'edit any article content',
