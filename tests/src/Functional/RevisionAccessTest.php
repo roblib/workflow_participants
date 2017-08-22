@@ -24,7 +24,7 @@ class RevisionAccessTest extends TestBase {
     $this->node->save();
     $this->node->moderation_state = 'draft';
     $this->node->save();
-    $this->assertTrue($this->moderationInfo->hasForwardRevision($this->node));
+    $this->assertTrue($this->moderationInfo->hasPendingRevision($this->node));
   }
 
   /**

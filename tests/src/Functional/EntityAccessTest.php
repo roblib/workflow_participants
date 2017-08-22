@@ -86,7 +86,7 @@ class EntityAccessTest extends TestBase {
     $this->node->save();
     $this->node->moderation_state = 'draft';
     $this->node->save();
-    $this->assertTrue($this->moderationInfo->hasForwardRevision($this->node));
+    $this->assertTrue($this->moderationInfo->hasPendingRevision($this->node));
 
     // There should be no access initially.
     $this->drupalGet($this->node->toUrl('latest-version'));
@@ -102,7 +102,7 @@ class EntityAccessTest extends TestBase {
 
     // There should be no moderatin ability initially.
     $this->assertSession()->fieldNotExists(t('Log message'));
-    $this->assertSession()->fieldNotExists(t('Moderate'));
+    $this->assertSession()->fieldNotExists(t('Change to'));
 
     // Add an accessible transition.
     /** @var \Drupal\workflows\WorkflowInterface $workflow */
@@ -114,7 +114,7 @@ class EntityAccessTest extends TestBase {
     $this->drupalGet($this->node->toUrl('latest-version'));
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->fieldExists(t('Log message'));
-    $this->assertSession()->fieldExists(t('Moderate'));
+    $this->assertSession()->fieldExists(t('Change to'));
     $edit = [
       'new_state' => 'published',
       'revision_log' => $this->randomString(),

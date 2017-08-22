@@ -72,7 +72,7 @@ class StateTransitionValidation extends ContentModerationBase {
 
     // This logic is copied from parent::getValidTransitions.
     $workflow = $this->moderationInfo->getWorkflowForEntity($entity);
-    $current_state = $entity->moderation_state->value ? $workflow->getState($entity->moderation_state->value) : $workflow->getTypePlugin()->getInitialState($workflow);
+    $current_state = $entity->moderation_state->value ? $workflow->getTypePlugin()->getState($entity->moderation_state->value) : $workflow->getTypePlugin()->getInitialState();
 
     // Legal transitions include those that are possible from the current state,
     // filtered by those whose target is legal on this bundle and that the
