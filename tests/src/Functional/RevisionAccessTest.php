@@ -49,7 +49,7 @@ class RevisionAccessTest extends TestBase {
 
     // Verify the default access still works for users with appropriate
     // permissions.
-    $admin = $this->createUser(['view all revisions']);
+    $admin = $this->createUser(['view all revisions', 'view any unpublished content']);
     $this->drupalLogin($admin);
     $this->drupalGet($this->node->toUrl('version-history'));
     $this->assertSession()->statusCodeEquals(200);
