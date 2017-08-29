@@ -48,6 +48,9 @@ class NotificationsTest extends WorkflowParticipantsTestBase {
     // Dummy UID 1.
     $this->createUser();
 
+    // Setup site email.
+    $this->config('system.site')->set('mail', 'admin@example.com')->save();
+
     $participant_role = $this->createRole(['can be workflow participant']);
     foreach (range(1, 10) as $i) {
       $account = $this->createUser();
@@ -92,7 +95,11 @@ class NotificationsTest extends WorkflowParticipantsTestBase {
     $entity->moderation_state = 'archived';
     $entity->save();
     $this->assertCount(1, $this->getMails());
-    $this->assertMail('to', implode(',', $expected));
+    $this->assertMail('to', 'admin@example.com');
+
+    // Recipients are BCC'd.
+    $mail = $this->getMails()[0];
+    $this->assertEquals(implode(',', $expected), $mail['headers']['Bcc']);
   }
 
 }
