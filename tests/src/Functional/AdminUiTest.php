@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\workflow_participants\Functional;
 
+use Drupal\user\RoleInterface;
 use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
 use Drupal\workflows\Entity\Workflow;
 
@@ -227,6 +228,37 @@ class AdminUiTest extends TestBase {
     $this->assertEquals($expected, $participants->getReviewerIds());
     $this->drupalGet('node/' . $this->node->id() . '/workflow-participants');
     $this->assertSession()->statusCodeEquals(403);
+  }
+
+  /**
+   * Tests that normal authenticated users can be added as participants.
+   */
+  public function testAuthenticatedUsers() {
+    $editor = $this->drupalCreateUser();
+
+    // Add the appropriate permissions to the authenticated role.
+    /** @var \Drupal\user\RoleInterface $role */
+    $role = \Drupal::entityTypeManager()->getStorage('user_role')->load(RoleInterface::AUTHENTICATED_ID);
+    $role->grantPermission('can be workflow participant');
+    $role->save();
+
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->linkExists(t('Workflow participants'));
+    $this->drupalGet('node/' . $this->node->id() . '/workflow-participants');
+    $this->assertSession()->statusCodeEquals(200);
+
+    // Add some participants.
+    $edit = [
+      'editors[0][target_id]' => $editor->getAccountName(),
+    ];
+    $this->drupalPostForm(NULL, $edit, t('Save'));
+    $workflow_participants = \Drupal::entityTypeManager()
+      ->getStorage('workflow_participants')
+      ->loadForModeratedEntity($this->node);
+    $this->assertInstanceOf(WorkflowParticipantsInterface::class, $workflow_participants);
+    $this->assertEquals($this->node->id(), $workflow_participants->getModeratedEntity()->id());
+    $this->assertEquals([$editor->id()], array_keys($workflow_participants->getEditors()));
+    $this->assertEmpty($workflow_participants->getReviewers());
   }
 
 }

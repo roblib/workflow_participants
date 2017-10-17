@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\EntityOwnerInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * Form controller for Workflow participants edit forms.
@@ -81,10 +82,18 @@ class WorkflowParticipantsForm extends ContentEntityForm {
    *   An array of role names.
    */
   protected function getParticipantRoles() {
-    $roles = array_filter($this->entityTypeManager->getStorage('user_role')->loadMultiple(), function ($role) {
+    $roles = array_keys(array_filter($this->entityTypeManager->getStorage('user_role')->loadMultiple(), function ($role) {
       return $role->hasPermission('can be workflow participant');
-    });
-    return array_keys($roles);
+    }));
+
+    // If the authenticated role has the permission, return empty since the
+    // user selection plugin doesn't expect that role to be passed in as a
+    // filter (since all users in the table have that role).
+    if (in_array(RoleInterface::AUTHENTICATED_ID, $roles)) {
+      return [];
+    }
+
+    return $roles;
   }
 
   /**
