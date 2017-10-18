@@ -6,6 +6,10 @@ package: Content moderation
 dependencies:
   - content_moderation:content_moderation
   - dynamic_entity_reference:dynamic_entity_reference
+  # @todo Remove hard-coded node dependency.
+  - drupal:node
+  - drupal:text
 test_dependencies:
   - content_moderation_notifications:content_moderation_notifications (3.x)
   - diff:diff
+  - token:token

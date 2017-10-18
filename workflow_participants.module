@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
 use Drupal\workflow_participants\EntityOperations;
 
 /**
@@ -78,6 +79,20 @@ function workflow_participants_entity_operation(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_workflow_participants_insert().
+ */
+function workflow_participants_workflow_participants_insert(WorkflowParticipantsInterface $entity) {
+  \Drupal::service('workflow_participants.notifier')->processNotifications($entity);
+}
+
+/**
+ * Implements hook_workflow_participants_update().
+ */
+function workflow_participants_workflow_participants_update(WorkflowParticipantsInterface $entity) {
+  \Drupal::service('workflow_participants.notifier')->processNotifications($entity);
+}
+
+/**
  * Implements hook_entity_delete().
  */
 function workflow_participants_entity_delete(EntityInterface $entity) {
@@ -89,6 +104,16 @@ function workflow_participants_entity_delete(EntityInterface $entity) {
     if (!$participants->isNew()) {
       $participants->delete();
     }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function workflow_participants_mail($key, &$message, $params) {
+  if ($key === 'new_participant') {
+    $message['subject'] = $params['subject'];
+    $message['body'] = [$params['body']];
   }
 }
 

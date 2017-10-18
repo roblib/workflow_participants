@@ -1,3 +1,5 @@
+administer workflow participants:
+  title: 'Administer workflow participant settings'
 manage workflow participants:
   title: 'Manage workflow participants'
 manage own workflow participants:

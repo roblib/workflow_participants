@@ -4,8 +4,8 @@ namespace Drupal\Tests\workflow_participants\Kernel;
 
 use Drupal\Core\Test\AssertMailTrait;
 use Drupal\entity_test\Entity\EntityTestRev;
-use Drupal\simpletest\UserCreationTrait;
 use Drupal\Tests\content_moderation_notifications\Kernel\ContentModerationNotificationCreateTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
  * Verify that notifications are sent via content moderation notifications.
@@ -25,7 +25,6 @@ class NotificationsTest extends WorkflowParticipantsTestBase {
    */
   public static $modules = [
     'content_moderation_notifications',
-    'filter',
     'filter_test',
   ];
 
@@ -58,6 +57,9 @@ class NotificationsTest extends WorkflowParticipantsTestBase {
       $account->save();
       $this->participants[$i] = $account;
     }
+
+    // Disable participant notifications, as those are tested elsewhere.
+    $this->config('workflow_participants.settings')->set('enable_notifications', FALSE)->save();
   }
 
   /**

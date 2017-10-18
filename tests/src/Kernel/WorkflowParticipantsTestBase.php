@@ -24,6 +24,7 @@ abstract class WorkflowParticipantsTestBase extends KernelTestBase {
     'content_moderation',
     'dynamic_entity_reference',
     'entity_test',
+    'filter',
     'node',
     'system',
     'user',
@@ -42,7 +43,12 @@ abstract class WorkflowParticipantsTestBase extends KernelTestBase {
     $this->installEntitySchema('user');
     $this->installEntitySchema('content_moderation_state');
     $this->installEntitySchema('workflow_participants');
-    $this->installConfig('content_moderation');
+    $this->installConfig([
+      'filter',
+      'content_moderation',
+      'workflow_participants',
+      'system',
+    ]);
 
     $this->enableModeration();
 
