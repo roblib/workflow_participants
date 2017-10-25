@@ -60,12 +60,12 @@ class EntityOperations implements ContainerInjectionInterface {
     $form['editor_transitions'] = [
       '#type' => 'checkbox',
       '#title' => t('Allow editors to make this transition'),
-      '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_editors', [])),
+      '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'editor_transitions', [])),
     ];
     $form['reviewer_transitions'] = [
       '#type' => 'checkbox',
       '#title' => t('Allow reviewers to make this transition'),
-      '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'enable_reviewers', [])),
+      '#default_value' => in_array($transition_id, $workflow->getThirdPartySetting('workflow_participants', 'reviewer_transitions', [])),
     ];
     $form['#entity_builders'][] = static::class . '::workflowTransitionsFormBuilder';
   }

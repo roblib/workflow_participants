@@ -31,6 +31,19 @@ class AdminUiTest extends TestBase {
       $this->drupalPostForm(NULL, $edit, t('Save'));
     }
 
+    // Test that the edit form for the transitions display the saved
+    // editor_transitions and reviewer_transitions settings properly.
+    foreach ($expected as $transition) {
+      $this->drupalGet('admin/config/workflow/workflows/manage/editorial/transition/' . $transition);
+      $this->assertSession()->checkboxChecked('editor_transitions');
+      if ($transition === 'archive') {
+        $this->assertSession()->checkboxChecked('reviewer_transitions');
+      }
+      else {
+        $this->assertSession()->checkboxNotChecked('reviewer_transitions');
+      }
+    }
+
     // Load the workflow and verify 3rd-party setting.
     /** @var \Drupal\workflows\WorkflowInterface $workflow */
     $workflow = Workflow::load('editorial');
