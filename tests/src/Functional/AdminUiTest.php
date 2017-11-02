@@ -274,4 +274,34 @@ class AdminUiTest extends TestBase {
     $this->assertEmpty($workflow_participants->getReviewers());
   }
 
+  /**
+   * Tests basic cache tag invalidation.
+   */
+  public function testCacheTags() {
+    $author = $this->drupalCreateUser(['manage own workflow participants']);
+    $this->node->setOwner($author);
+    $this->node->moderation_state = 'published';
+    $this->node->save();
+
+    $editor = $this->participants[1];
+    $this->drupalLogin($editor);
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->linkNotExists(t('Workflow participants'));
+
+    // Login as author, add the editor.
+    $this->drupalLogin($author);
+    $this->drupalGet('/node/' . $this->node->id() . '/workflow-participants');
+    $edit = [
+      'editors[0][target_id]' => $editor->getAccountName(),
+    ];
+    $this->drupalPostForm(NULL, $edit, t('Save'));
+
+    $this->drupalLogin($editor);
+    $this->drupalGet($this->node->toUrl());
+    $this->assertSession()->linkExists(t('Workflow participants'));
+    $this->clickLink(t('Workflow participants'));
+    $this->assertSession()->statusCodeEquals(200);
+  }
+
 }
