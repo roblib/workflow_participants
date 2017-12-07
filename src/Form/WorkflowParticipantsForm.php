@@ -115,11 +115,13 @@ class WorkflowParticipantsForm extends ContentEntityForm {
       '#type' => 'submit',
       '#value' => $this->t('Remove me as reviewer'),
       '#submit' => ['::removeSelf', '::submitForm', '::save', '::checkAccess'],
+      '#weight' => 5,
     ];
     $form['actions']['cancel'] = [
       '#type' => 'submit',
       '#value' => $this->t('Cancel'),
       '#submit' => ['::cancel'],
+      '#weight' => 10,
     ];
 
     // Display participants.
