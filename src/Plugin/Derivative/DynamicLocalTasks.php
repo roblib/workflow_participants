@@ -71,16 +71,17 @@ class DynamicLocalTasks extends DeriverBase implements ContainerDeriverInterface
   public function getDerivativeDefinitions($base_plugin_definition) {
     $this->derivatives = [];
 
+    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $workflow_participant_entities */
     $workflow_participant_entities = array_filter($this->entityTypeManager->getDefinitions(), function (EntityTypeInterface $type) {
-      return $this->moderationInfo->canModerateEntitiesOfEntityType($type);
+      return $this->moderationInfo->canModerateEntitiesOfEntityType($type)
+        && $type->hasLinkTemplate('workflow-participants');
     });
 
-    // Hardcoded for node at this time.
-    if (in_array('node', array_keys($workflow_participant_entities))) {
-      $this->derivatives['node.workflow_participants_tab'] = [
-        'route_name' => 'entity.node.workflow_participants',
+    foreach ($workflow_participant_entities as $entity_type_id => $entity_type) {
+      $this->derivatives["$entity_type_id.workflow_participants_tab"] = [
+        'route_name' => "entity.$entity_type_id.workflow_participants",
         'title' => $this->t('Workflow participants'),
-        'base_route' => 'entity.node.canonical',
+        'base_route' => "entity.$entity_type_id.canonical",
         'weight' => 7,
       ] + $base_plugin_definition;
     }

@@ -119,6 +119,7 @@ class WorkflowParticipants extends BlockBase implements ContainerFactoryPluginIn
     }
 
     // @todo This is hardcoded for nodes.
+    // @see https://www.drupal.org/node/2922353
     $build = $this->viewBuilder->view($this->participants);
     $build['edit_workflow_participants'] = Link::createFromRoute(
       $this->t('Edit workflow participants'),
@@ -132,7 +133,7 @@ class WorkflowParticipants extends BlockBase implements ContainerFactoryPluginIn
   /**
    * Helper method to retrieve the current page entity.
    *
-   * @return \Drupal\Core\Entity\EntityInterface|null
+   * @return \Drupal\Core\Entity\ContentEntityInterface|null
    *   The entity for the current route.
    */
   protected function getCurrentEntity() {

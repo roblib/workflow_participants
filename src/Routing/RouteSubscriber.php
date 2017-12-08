@@ -28,6 +28,7 @@ class RouteSubscriber implements EventSubscriberInterface {
    */
   public function alterRoutes(RouteBuildEvent $event) {
     // @todo This is hard-coded for nodes.
+    // @see https://www.drupal.org/node/2922348
     $collection = $event->getRouteCollection();
 
     // Revision history tab.

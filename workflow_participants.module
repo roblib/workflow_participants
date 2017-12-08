@@ -10,10 +10,18 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
 use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
 use Drupal\workflow_participants\EntityOperations;
+use Drupal\workflow_participants\EntityTypeInfo;
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function workflow_participants_entity_type_alter(array &$entity_types) {
+  \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityTypeInfo::class)
+    ->alter($entity_types);
+}
 
 /**
  * Implements hook_form_BASE_ID_alter().
@@ -66,12 +74,11 @@ function workflow_participants_entity_access(EntityInterface $entity, $operation
  * Implements hook_entity_operation().
  */
 function workflow_participants_entity_operation(EntityInterface $entity) {
-  // @todo Don't hard code for node.
   $operations = [];
-  if ($entity instanceof NodeInterface) {
+  if ($entity->hasLinkTemplate('workflow-participants')) {
     $operations['workflow-participants'] = [
       'title' => t('Workflow participants'),
-      'url' => Url::fromRoute('entity.node.workflow_participants', ['node' => $entity->id()]),
+      'url' => $entity->toUrl('workflow-participants'),
       'weight' => 27,
     ];
   }

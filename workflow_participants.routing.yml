@@ -6,18 +6,3 @@ workflow_participants.settings:
     _form: 'Drupal\workflow_participants\Form\SettingsForm'
   requirements:
     _permission: 'administer workflow participants'
-
-# @todo Don't hard-code for nodes.
-entity.node.workflow_participants:
-  path: '/node/{node}/workflow-participants'
-  defaults:
-    _entity_form: 'workflow_participants'
-    _title_callback: Drupal\Core\Entity\Controller\EntityController::title
-  requirements:
-    _workflow_participants_manage_access: 'node'
-    node: \d+
-  options:
-    parameters:
-      node:
-        type: entity:node
-    _node_operation_route: TRUE

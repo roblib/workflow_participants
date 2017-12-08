@@ -55,8 +55,11 @@ class WorkflowParticipantsForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function getEntityFromRouteMatch(RouteMatchInterface $route_match, $entity_type_id) {
-    // @todo Generalize this beyond nodes.
-    $entity = $route_match->getParameter('node');
+    // The entity type ID passed in here is always 'workflow_participants'. The
+    // corresponding moderated entity needs to be determined from the route.
+    $route = $route_match->getRouteObject();
+    $entity_type_id = $route->getOption('_workflow_participants_entity_type');
+    $entity = $route_match->getParameter($entity_type_id);
     return $this->entityTypeManager->getStorage('workflow_participants')->loadForModeratedEntity($entity);
   }
 
@@ -166,7 +169,7 @@ class WorkflowParticipantsForm extends ContentEntityForm {
     if (!$entity->access('view')) {
       $form_state->setRedirect('<front>');
     }
-    elseif (!$access_checker->access($this->currentUser(), $entity) instanceof AccessResultAllowed) {
+    elseif (!$access_checker->access($this->getRouteMatch()->getRouteObject(), $this->getRouteMatch(), $this->currentUser()) instanceof AccessResultAllowed) {
       // User might still have access to view, but not the tab. In this case,
       // redirect to the entity.
       $form_state->setRedirectUrl($entity->toUrl());
