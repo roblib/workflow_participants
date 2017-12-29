@@ -27,6 +27,7 @@ use Drupal\workflows\WorkflowInterface;
  *     },
  *     "access" = "Drupal\workflow_participants\WorkflowParticipantsAccessControlHandler",
  *     "storage" = "Drupal\workflow_participants\WorkflowParticipantsStorage",
+ *     "storage_schema" = "Drupal\workflow_participants\WorkflowParticipantsStorageSchema",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData"
  *   },
