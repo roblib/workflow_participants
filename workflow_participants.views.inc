@@ -1,11 +1,12 @@
 <?php
+
 /**
  * @file
  * Provide views data for workflow_participants.module.
  */
 
 /**
- *  Implements hook_views_data().
+ * Implements hook_views_data().
  */
 function workflow_participants_views_data() {
 
