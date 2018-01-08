@@ -82,7 +82,14 @@ class RevisionCheck implements AccessInterface {
     $route->setRequirement('_access_node_revision', $operation);
 
     return $this->nodeRevisionAccess->access($route, $account, $node_revision, $node)
-      ->orIf(AccessResult::allowedIf($node && ($operation === 'view') && ($participants->isEditor($account) || $participants->isReviewer($account)))->addCacheableDependency($participants));
+      ->orIf(
+        AccessResult::allowedIf(
+          $node
+          // There should be at least 2 revisions.
+          && ($this->nodeStorage->countDefaultLanguageRevisions($node) > 1)
+          && ($operation === 'view')
+          && ($participants->isEditor($account) || $participants->isReviewer($account))
+        ))->addCacheableDependency($participants);
   }
 
 }

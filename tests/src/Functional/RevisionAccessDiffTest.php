@@ -20,6 +20,13 @@ class RevisionAccessDiffTest extends RevisionAccessTest {
    * Tests ability to view diffs of revisions.
    */
   public function testRevisionDiffs() {
+    // Create a forward revision.
+    $this->node->moderation_state = 'published';
+    $this->node->save();
+    $this->node->moderation_state = 'draft';
+    $this->node->save();
+    $this->assertTrue($this->moderationInfo->hasPendingRevision($this->node));
+
     // Add this user as a reviewer.
     $participants = \Drupal::entityTypeManager()->getStorage('workflow_participants')->loadForModeratedEntity($this->node);
     $participants->reviewers[0] = $this->participants[1];

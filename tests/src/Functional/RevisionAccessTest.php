@@ -18,13 +18,6 @@ class RevisionAccessTest extends TestBase {
   protected function setUp() {
     parent::setUp();
     $this->drupalLogin($this->participants[1]);
-
-    // Create a forward revision.
-    $this->node->moderation_state = 'published';
-    $this->node->save();
-    $this->node->moderation_state = 'draft';
-    $this->node->save();
-    $this->assertTrue($this->moderationInfo->hasPendingRevision($this->node));
   }
 
   /**
@@ -42,6 +35,29 @@ class RevisionAccessTest extends TestBase {
     $participants->reviewers[0] = $this->participants[1];
     $participants->save();
 
+    // There should still be no access granted to the revision tab as this node
+    // has no more than one revision.
+    $this->drupalGet($this->node->toUrl('version-history'));
+    $this->assertSession()->statusCodeEquals(403);
+
+    // Create a revision (node still unpublished).
+    $this->node->moderation_state = 'draft';
+    $this->node->save();
+
+    // The reviewer should now have access.
+    $this->drupalGet($this->node->toUrl('version-history'));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->drupalGet($this->node->toUrl('revision'));
+    $this->assertSession()->statusCodeEquals(200);
+
+    // Create a forward revision.
+    $this->node->moderation_state = 'published';
+    $this->node->save();
+    $this->node->moderation_state = 'draft';
+    $this->node->save();
+    $this->assertTrue($this->moderationInfo->hasPendingRevision($this->node));
+
+    // The reviewer should now have access.
     $this->drupalGet($this->node->toUrl('version-history'));
     $this->assertSession()->statusCodeEquals(200);
     $this->drupalGet($this->node->toUrl('revision'));
