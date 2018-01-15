@@ -2,7 +2,6 @@
 
 namespace Drupal\workflow_participants\Access;
 
-use Drupal\content_moderation\Access\LatestRevisionCheck;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -33,12 +32,12 @@ class LatestVersionCheck implements AccessInterface {
   /**
    * Constructs the latest version access checker.
    *
-   * @param \Drupal\content_moderation\Access\LatestRevisionCheck $inner
+   * @param \Drupal\Core\Routing\Access\AccessInterface $inner
    *   The content moderation access checker.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
    */
-  public function __construct(LatestRevisionCheck $inner, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(AccessInterface $inner, EntityTypeManagerInterface $entity_type_manager) {
     $this->inner = $inner;
     $this->participantStorage = $entity_type_manager->getStorage('workflow_participants');
   }

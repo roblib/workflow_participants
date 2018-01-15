@@ -3,7 +3,7 @@
 namespace Drupal\workflow_participants;
 
 use Drupal\content_moderation\ModerationInformationInterface;
-use Drupal\content_moderation\StateTransitionValidation as ContentModerationBase;
+use Drupal\content_moderation\StateTransitionValidationInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -15,7 +15,7 @@ use Drupal\workflows\TransitionInterface;
  * This overrides the base class to allow for access to transitions for
  * workflow participants.
  */
-class StateTransitionValidation extends ContentModerationBase {
+class StateTransitionValidation implements StateTransitionValidationInterface {
 
   /**
    * The entity type manager.
@@ -25,21 +25,34 @@ class StateTransitionValidation extends ContentModerationBase {
   protected $entityTypeManager;
 
   /**
+   * The decorated service.
+   *
+   * @var \Drupal\content_moderation\StateTransitionValidationInterface
+   */
+  protected $inner;
+
+  /**
+   * The moderation information service.
+   *
+   * @var \Drupal\content_moderation\ModerationInformationInterface
+   */
+  protected $moderationInformation;
+
+  /**
    * Constructs the state transition validator.
    *
    * Since this is extending the decorated service, no inner service is needed.
    *
-   * @todo Once ported to 8.3.x version of content moderation/workflow, a
-   * better solution should be found so this can be less complicated and copy
-   * less code.
-   *
+   * @param \Drupal\content_moderation\StateTransitionValidationInterface $inner
+   *   The inner service.
    * @param \Drupal\content_moderation\ModerationInformationInterface $moderation_information
    *   The moderation information service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
    */
-  public function __construct(ModerationInformationInterface $moderation_information, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct($moderation_information);
+  public function __construct(StateTransitionValidationInterface $inner, ModerationInformationInterface $moderation_information, EntityTypeManagerInterface $entity_type_manager) {
+    $this->inner = $inner;
+    $this->moderationInformation = $moderation_information;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -47,7 +60,7 @@ class StateTransitionValidation extends ContentModerationBase {
    * {@inheritdoc}
    */
   public function getValidTransitions(ContentEntityInterface $entity, AccountInterface $user) {
-    $transitions = parent::getValidTransitions($entity, $user);
+    $transitions = $this->inner->getValidTransitions($entity, $user);
 
     // In addition to those granted by content moderation, check for transitions
     // that allow editor/reviewer transitions.
@@ -70,8 +83,9 @@ class StateTransitionValidation extends ContentModerationBase {
       return [];
     }
 
-    // This logic is copied from parent::getValidTransitions.
-    $workflow = $this->moderationInfo->getWorkflowForEntity($entity);
+    // This logic is copied from
+    // Drupal\content_moderation\StateTransitionValidation::getValidTransitions.
+    $workflow = $this->moderationInformation->getWorkflowForEntity($entity);
     $current_state = $entity->moderation_state->value ? $workflow->getTypePlugin()->getState($entity->moderation_state->value) : $workflow->getTypePlugin()->getInitialState();
 
     // Legal transitions include those that are possible from the current state,
