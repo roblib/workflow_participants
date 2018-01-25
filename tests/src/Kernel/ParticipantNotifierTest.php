@@ -25,7 +25,7 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['token'];
+  public static $modules = ['token', 'filter_test'];
 
   /**
    * Test fixture.
@@ -55,6 +55,7 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
     foreach (range(1, 5) as $i) {
       $this->accounts[$i] = $this->createUser(['can be workflow participant']);
     }
+    $this->installConfig($this->installConfig(['filter_test']));
   }
 
   /**
@@ -140,6 +141,37 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
 
     $mail = array_shift($mails);
     $this->assertEquals($this->accounts[3]->getEmail(), $mail['to']);
+  }
+
+  /**
+   * @covers ::processNotifications
+   */
+  public function testFilterFormatNotifications() {
+    // Ensure that the filter formats are used.
+    $config = \Drupal::configFactory()->getEditable('workflow_participants.settings');
+    $this->container->get('state')->set('system.test_mail_collector', []);
+    $config->set('participant_message.body.value', 'A <strong>filtered</strong> body');
+    $config->set('participant_message.body.format', 'plain_text');
+    $config->save();
+
+    $node = $this->createNode();
+    $participants = $this->participantStorage->loadForModeratedEntity($node);
+    $participants->editors[] = ['target_id' => $this->accounts[1]->id()];
+    $participants->save();
+
+    $mail = $this->getMails();
+    // Ensure that <strong> is not escaped.
+    $this->assertNotEquals((string)$mail[0]['params']['body'], $config->get('participant_message.body.value'));
+
+    $this->container->get('state')->set('system.test_mail_collector', []);
+    $config->set('participant_message.body.format', 'filtered_html');
+    $config->save();
+    $participants->editors[] = ['target_id' => $this->accounts[2]->id()];
+    $participants->save();
+
+    $mail = $this->getMails();
+    // Ensure that <strong> is escaped.
+    $this->assertEquals((string)$mail[0]['params']['body'], $config->get('participant_message.body.value'));
   }
 
 }

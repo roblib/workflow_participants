@@ -113,7 +113,7 @@ class ParticipantNotifier implements ParticipantNotifierInterface {
     ];
     $config = $this->configFactory->get('workflow_participants.settings');
     $subject = $config->get('participant_message.subject');
-    $body = check_markup($config->get('participant_message.body.value'), $config->get('participants_message.body.format'));
+    $body = check_markup($config->get('participant_message.body.value'), $config->get('participant_message.body.format'));
     $context = $this->getTokenContext($entity);
 
     foreach ($accounts as $account) {
