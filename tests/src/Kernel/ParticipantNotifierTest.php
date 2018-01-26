@@ -103,7 +103,7 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
   public function testProcessNotifications() {
     $config = \Drupal::configFactory()->getEditable('workflow_participants.settings');
     $config->set('participant_message.subject', 'A subject [node:title]');
-    $config->set('participant_message.body.value', 'A body [node:url:absolute]');
+    $config->set('participant_message.body.value', 'A body [node:type]');
     $config->save();
 
     $node = $this->createNode();
@@ -129,7 +129,7 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
 
     // Ensure token replacement.
     $this->assertMail('subject', 'A subject ' . $node->label());
-    $this->assertMail('body', 'A body ' . $node->toUrl()->setAbsolute()->toString() . "\n\n");
+    $this->assertMail('body', 'A body ' . $node->getType() . "\n\n");
 
     // Add 2 new users.
     $this->container->get('state')->set('system.test_mail_collector', []);

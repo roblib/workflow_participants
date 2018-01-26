@@ -113,7 +113,8 @@ class ParticipantNotifier implements ParticipantNotifierInterface {
     ];
     $config = $this->configFactory->get('workflow_participants.settings');
     $subject = $config->get('participant_message.subject');
-    $body = check_markup($config->get('participant_message.body.value'), $config->get('participant_message.body.format'));
+    $body = $config->get('participant_message.body.value');
+    $format = $config->get('participant_message.body.format');
     $context = $this->getTokenContext($entity);
 
     foreach ($accounts as $account) {
@@ -121,7 +122,7 @@ class ParticipantNotifier implements ParticipantNotifierInterface {
       $context['user'] = $account;
 
       $params['subject'] = $this->token->replace($subject, $context);
-      $params['body'] = $this->token->replace($body, $context);
+      $params['body'] = check_markup($this->token->replace($body, $context), $format);
 
       $this->mail->mail('workflow_participants', 'new_participant', $account->getEmail(), $account->getPreferredLangcode(), $params);
     }
