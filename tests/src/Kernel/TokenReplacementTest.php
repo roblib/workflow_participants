@@ -87,6 +87,7 @@ class TokenReplacementTest extends WorkflowParticipantsTestBase {
     $tests['[node:editors]'] = implode(', ', $editors);
     $tests['[node:reviewers]'] = implode(', ', $reviewers);
     $tests['[node:all-participants]'] = implode(', ', $all);
+    $tests['[node:participant-type]'] = 'Editor';
 
     // Metadata.
     $base_bubbleable_metadata = BubbleableMetadata::createFromObject($node);
@@ -113,13 +114,27 @@ class TokenReplacementTest extends WorkflowParticipantsTestBase {
       'user:' . $this->participants[4]->id(),
       'user:' . $this->participants[5]->id(),
     ]);
+    $bubbleable_metadata = clone $base_bubbleable_metadata;
+    $metadata_tests['[node:participant-type]'] = $bubbleable_metadata->addCacheTags([
+      'user:' . $this->participants[3]->id(),
+    ]);
 
     foreach ($tests as $input => $expected) {
       $bubbleable_metadata = new BubbleableMetadata();
-      $output = $this->token->replace($input, ['node' => $node], [], $bubbleable_metadata);
+      $output = $this->token->replace($input, ['node' => $node, 'user' => $this->participants[3]], [], $bubbleable_metadata);
       $this->assertEquals($expected, $output, 'Token replacement did not match for ' . $input);
       $this->assertEquals($metadata_tests[$input], $bubbleable_metadata, 'Metadata for token replacement did not match for ' . $input);
     }
+
+    // Test reviewers are replaced too.
+    $bubbleable_metadata = new BubbleableMetadata();
+    $expected_metatdata = clone $base_bubbleable_metadata;
+    $expected_metatdata->addCacheTags([
+      'user:' . $this->participants[1]->id(),
+    ]);
+    $output = $this->token->replace('[node:participant-type]', ['node' => $node, 'user' => $this->participants[1]], [], $bubbleable_metadata);
+    $this->assertEquals(t('Reviewer'), $output, 'Token replacement did not match for [node:participant-type]');
+    $this->assertEquals($expected_metatdata, $bubbleable_metadata);
   }
 
   /**

@@ -63,6 +63,10 @@ class Tokens implements ContainerInjectionInterface {
           'name' => $this->t('All workflow participants'),
           'description' => $this->t('Editors and reviewers for this @type', ['@type' => $entity_type->getLabel()]),
         ];
+        $tokens[$entity_type->id()]['participant-type'] = [
+          'name' => $this->t('Workflow participant type'),
+          'description' => $this->t('Participant type for this @type', ['@type' => $entity_type->getLabel()]),
+        ];
       }
     }
 
@@ -131,6 +135,20 @@ class Tokens implements ContainerInjectionInterface {
             if (!empty($participants->getEditors()) || !empty($participants->getReviewers())) {
               $replacements[$original] = $this->formatParticipants($participants->getEditors() + $participants->getReviewers(), $bubbleable_metadata);
               $bubbleable_metadata->addCacheableDependency($participants);
+            }
+            break;
+
+          case 'participant-type':
+            $participants = $storage->loadForModeratedEntity($data[$type]);
+            if (isset($data['user']) && $participants->isEditor($data['user'])) {
+              $replacements[$original] = $this->t('Editor');
+              $bubbleable_metadata->addCacheableDependency($participants);
+              $bubbleable_metadata->addCacheableDependency($data['user']);
+            }
+            elseif (isset($data['user']) && $participants->isReviewer($data['user'])) {
+              $replacements[$original] = $this->t('Reviewer');
+              $bubbleable_metadata->addCacheableDependency($participants);
+              $bubbleable_metadata->addCacheableDependency($data['user']);
             }
             break;
         }

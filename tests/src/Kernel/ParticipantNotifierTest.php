@@ -161,7 +161,7 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
 
     $mail = $this->getMails();
     // Ensure that <strong> is not escaped.
-    $this->assertNotEquals((string)$mail[0]['params']['body'], $config->get('participant_message.body.value'));
+    $this->assertNotEquals((string) $mail[0]['params']['body'], $config->get('participant_message.body.value'));
 
     $this->container->get('state')->set('system.test_mail_collector', []);
     $config->set('participant_message.body.format', 'filtered_html');
@@ -171,7 +171,7 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
 
     $mail = $this->getMails();
     // Ensure that <strong> is escaped.
-    $this->assertEquals((string)$mail[0]['params']['body'], $config->get('participant_message.body.value'));
+    $this->assertEquals((string) $mail[0]['params']['body'], $config->get('participant_message.body.value'));
   }
 
 }
