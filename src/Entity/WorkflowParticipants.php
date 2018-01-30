@@ -60,7 +60,7 @@ class WorkflowParticipants extends ContentEntityBase implements WorkflowParticip
       ->setSetting('handler', 'default:user')
       ->setSetting('handler_settings', [
         'include_anonymous' => FALSE,
-        'exclude_blocked' => TRUE,
+        'include_blocked'   => FALSE,
       ])
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
@@ -85,7 +85,7 @@ class WorkflowParticipants extends ContentEntityBase implements WorkflowParticip
       ->setSetting('handler', 'default:user')
       ->setSetting('handler_settings', [
         'include_anonymous' => FALSE,
-        'exclude_blocked' => TRUE,
+        'include_blocked'   => FALSE,
       ])
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',

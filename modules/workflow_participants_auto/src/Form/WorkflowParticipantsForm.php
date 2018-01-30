@@ -45,6 +45,7 @@ class WorkflowParticipantsForm extends EntityForm {
         '#size' => 128,
         '#selection_settings' => [
           'include_anonymous' => FALSE,
+          'include_blocked'   => FALSE,
         ],
         '#tags' => TRUE,
         '#default_value' => User::loadMultiple($users),
