@@ -64,7 +64,8 @@ class TokenReplacementTest extends WorkflowParticipantsTestBase {
     $participants = $this->setUpParticipants($node);
 
     // Verify expected tokens.
-    $tokens = workflow_participants_token_info();
+    $tokens = [];
+    workflow_participants_token_info_alter($tokens);
     $this->assertArrayHasKey('node', $tokens['tokens']);
     $this->assertArrayNotHasKey('user', $tokens['tokens']);
     $this->assertArrayNotHasKey('workflow_participants', $tokens['tokens']);

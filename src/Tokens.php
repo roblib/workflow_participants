@@ -41,39 +41,29 @@ class Tokens implements ContainerInjectionInterface {
   }
 
   /**
-   * Generates token information.
+   * Add workflow participant tokens.
    */
-  public function info() {
-    $tokens = $types = [];
+  public function infoAlter(&$info) {
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type) {
       if ($entity_type->entityClassImplements(EditorialContentEntityBase::class)) {
-        $types[$entity_type->id()]['workflow_participants'] = [
-          'name' => $this->t('Workflow participants for @type', ['@type' => $entity_type->getLabel()]),
-          'description' => $this->t('Tokens for workflow participants.'),
-        ];
-        $tokens[$entity_type->id()]['editors'] = [
+        $info['tokens'][$entity_type->id()]['editors'] = [
           'name' => $this->t('Editors'),
           'description' => $this->t('Editors for this @type', ['@type' => $entity_type->getLabel()]),
         ];
-        $tokens[$entity_type->id()]['reviewers'] = [
+        $info['tokens'][$entity_type->id()]['reviewers'] = [
           'name' => $this->t('Reviewers'),
           'description' => $this->t('Reviewers for this @type', ['@type' => $entity_type->getLabel()]),
         ];
-        $tokens[$entity_type->id()]['all-participants'] = [
+        $info['tokens'][$entity_type->id()]['all-participants'] = [
           'name' => $this->t('All workflow participants'),
           'description' => $this->t('Editors and reviewers for this @type', ['@type' => $entity_type->getLabel()]),
         ];
-        $tokens[$entity_type->id()]['participant-type'] = [
+        $info['tokens'][$entity_type->id()]['participant-type'] = [
           'name' => $this->t('Workflow participant type'),
           'description' => $this->t('Participant type for this @type', ['@type' => $entity_type->getLabel()]),
         ];
       }
     }
-
-    return [
-      'types' => $types,
-      'tokens' => $tokens,
-    ];
   }
 
   /**

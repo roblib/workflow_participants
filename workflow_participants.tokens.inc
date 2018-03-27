@@ -9,12 +9,12 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\workflow_participants\Tokens;
 
 /**
- * Implements hook_token_info().
+ * Implements hook_token_info_alter().
  */
-function workflow_participants_token_info() {
+function workflow_participants_token_info_alter(&$info) {
   return \Drupal::service('class_resolver')
     ->getInstanceFromDefinition(Tokens::class)
-    ->info();
+    ->infoAlter($info);
 }
 
 /**
