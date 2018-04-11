@@ -9,10 +9,32 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
 use Drupal\workflow_participants\EntityOperations;
 use Drupal\workflow_participants\EntityTypeInfo;
+
+/**
+ * Implements hook_help().
+ */
+function workflow_participants_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.workflow_participants':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= t('This module allows per-entity workflow participants to be configured. These participants can either be editors or reviewers. Content moderation states can be configured to allow editors, reviewers, or both, to make transitions. Reviewers cannot edit the content, only moderate. Editors can moderate and make changes.');
+      $output .= '<h3>' . t('Setup and usage') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Permissions') . '</dt>';
+      $output .= '<dd>' . t('Optionally configure roles with the <em>Allowed to be a workflow editor or reviewer</em> permission. If this is skipped, any active user can be an editor or reviewer.') . '</dd>';
+      $output .= '<dt>' . t('Moderation state transitions') . '</dt>';
+      $output .= '<dd>' . t('Edit <a href=":workflows">moderation states</a> and check the <em>Allow editors</em> and <em>Allow reviewers</em> as needed. ', [':workflows' => Url::fromRoute('entity.workflow.collection')->toString()]) . '</dd>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
 
 /**
  * Implements hook_entity_type_alter().
