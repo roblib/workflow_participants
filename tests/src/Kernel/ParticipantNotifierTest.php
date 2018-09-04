@@ -59,6 +59,8 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
   }
 
   /**
+   * Tests new participants.
+   *
    * @covers ::getNewParticipants
    */
   public function testGetNewParticipants() {
@@ -98,6 +100,8 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
   }
 
   /**
+   * Tests process notifications.
+   *
    * @covers ::processNotifications
    */
   public function testProcessNotifications() {
@@ -144,6 +148,8 @@ class ParticipantNotifierTest extends WorkflowParticipantsTestBase {
   }
 
   /**
+   * Tests process notifications.
+   *
    * @covers ::processNotifications
    */
   public function testFilterFormatNotifications() {

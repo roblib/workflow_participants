@@ -4,9 +4,9 @@ namespace Drupal\Tests\workflow_participants\Functional;
 
 use Drupal\block_content\Entity\BlockContent;
 use Drupal\block_content\Entity\BlockContentType;
+use Drupal\Tests\workflow_participants\Kernel\WorkflowParticipantsTestTrait;
 use Drupal\user\Entity\Role;
 use Drupal\workflow_participants\Entity\WorkflowParticipantsInterface;
-use Drupal\workflows\Entity\Workflow;
 
 /**
  * Tests for non-node functionality.
@@ -14,6 +14,8 @@ use Drupal\workflows\Entity\Workflow;
  * @group workflow_participants.
  */
 class NonNodeUiTest extends TestBase {
+
+  use WorkflowParticipantsTestTrait;
 
   /**
    * {@inheritdoc}
@@ -30,9 +32,7 @@ class NonNodeUiTest extends TestBase {
     $type = BlockContentType::create(['id' => 'basic']);
     $type->save();
 
-    $workflow = Workflow::load('editorial');
-    $workflow->getTypePlugin()->addEntityTypeAndBundle('block_content', 'basic');
-    $workflow->save();
+    $this->enableModeration('block_content', 'basic');
 
     $roles = $this->adminUser->getRoles(TRUE);
     $role = Role::load(reset($roles));

@@ -3,7 +3,7 @@
 namespace Drupal\Tests\workflow_participants\Kernel\Views;
 
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
-use Drupal\workflows\Entity\Workflow;
+use Drupal\Tests\workflow_participants\Kernel\WorkflowParticipantsTestTrait;
 use Drupal\views\Views;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
@@ -20,6 +20,7 @@ class ParticipantFilterTest extends ViewsKernelTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
   use UserCreationTrait;
+  use WorkflowParticipantsTestTrait;
 
   /**
    * Node author.
@@ -97,7 +98,7 @@ class ParticipantFilterTest extends ViewsKernelTestBase {
       'node_test_config',
     ]);
 
-    $this->enableModeration('default');
+    $this->enableModeration('node', 'default');
 
     // Create author.
     $this->author = $this->createUser([
@@ -244,18 +245,6 @@ class ParticipantFilterTest extends ViewsKernelTestBase {
         ],
       ],
     ];
-  }
-
-  /**
-   * Enable moderation for specified node bundle.
-   *
-   * @param string $bundle
-   *   Name of node bundle.
-   */
-  protected function enableModeration($bundle) {
-    $workflow = Workflow::load('editorial');
-    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', $bundle);
-    $workflow->save();
   }
 
 }

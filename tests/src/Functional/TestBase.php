@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\workflow_participants\Functional;
 
-use Drupal\simpletest\NodeCreationTrait;
+use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\workflows\Entity\Workflow;
+use Drupal\Tests\workflow_participants\Kernel\WorkflowParticipantsTestTrait;
 
 /**
  * Base class for functional workflow participant tests.
@@ -12,6 +12,7 @@ use Drupal\workflows\Entity\Workflow;
 abstract class TestBase extends BrowserTestBase {
 
   use NodeCreationTrait;
+  use WorkflowParticipantsTestTrait;
 
   /**
    * User with workflow participant permissions.
@@ -70,10 +71,7 @@ abstract class TestBase extends BrowserTestBase {
     // Add a node type and enable content moderation.
     $this->createContentType(['type' => 'article']);
 
-    /** @var \Drupal\workflows\WorkflowInterface $workflow */
-    $workflow = Workflow::load('editorial');
-    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', 'article');
-    $workflow->save();
+    $this->enableModeration('node', 'article');
 
     $this->node = $this->createNode([
       'type' => 'article',

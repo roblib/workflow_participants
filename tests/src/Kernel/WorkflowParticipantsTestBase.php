@@ -4,7 +4,6 @@ namespace Drupal\Tests\workflow_participants\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
-use Drupal\workflows\Entity\Workflow;
 
 /**
  * Base kernel test class for workflow participants.
@@ -12,6 +11,7 @@ use Drupal\workflows\Entity\Workflow;
 abstract class WorkflowParticipantsTestBase extends KernelTestBase {
 
   use UserCreationTrait;
+  use WorkflowParticipantsTestTrait;
 
   /**
    * Participant storage.
@@ -56,20 +56,6 @@ abstract class WorkflowParticipantsTestBase extends KernelTestBase {
     $this->enableModeration();
 
     $this->participantStorage = $this->container->get('entity_type.manager')->getStorage('workflow_participants');
-  }
-
-  /**
-   * Creates a page node type to test with, ensuring that it's moderated.
-   *
-   * @param string $entity_type
-   *   The entity type ID to enable workflow for.
-   * @param string $bundle
-   *   The bundle ID.
-   */
-  protected function enableModeration($entity_type = 'entity_test_rev', $bundle = 'entity_test_rev') {
-    $workflow = Workflow::load('editorial');
-    $workflow->getTypePlugin()->addEntityTypeAndBundle($entity_type, $bundle);
-    $workflow->save();
   }
 
 }

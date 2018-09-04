@@ -3,7 +3,7 @@
 namespace Drupal\Tests\workflow_participants\Kernel\Views;
 
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
-use Drupal\workflows\Entity\Workflow;
+use Drupal\Tests\workflow_participants\Kernel\WorkflowParticipantsTestTrait;
 use Drupal\views\Views;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
@@ -20,6 +20,7 @@ class ParticipantRoleTest extends ViewsKernelTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
   use UserCreationTrait;
+  use WorkflowParticipantsTestTrait;
 
   /**
    * Node author.
@@ -90,7 +91,7 @@ class ParticipantRoleTest extends ViewsKernelTestBase {
       'node_test_config',
     ]);
 
-    $this->enableModeration('default');
+    $this->enableModeration('node', 'default');
 
     // Create author.
     $this->author = $this->createUser([
@@ -169,18 +170,6 @@ class ParticipantRoleTest extends ViewsKernelTestBase {
     $this->assertRegExp('#Reviewer#', $view->field['participant_role_field']->last_render_text, 'Reviewer text not present.');
     $this->assertRegExp('#Editor#', $view->field['participant_role_field']->last_render_text, 'Editor text not present.');
     $this->assertNotRegExp('#Author#', $view->field['participant_role_field']->last_render_text, 'Author text should not be present.');
-  }
-
-  /**
-   * Enable moderation for specified node bundle.
-   *
-   * @param string $bundle
-   *   Name of node bundle.
-   */
-  protected function enableModeration($bundle) {
-    $workflow = Workflow::load('editorial');
-    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', $bundle);
-    $workflow->save();
   }
 
 }
