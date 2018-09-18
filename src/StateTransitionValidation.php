@@ -86,7 +86,7 @@ class StateTransitionValidation implements StateTransitionValidationInterface {
     // This logic is copied from
     // Drupal\content_moderation\StateTransitionValidation::getValidTransitions.
     $workflow = $this->moderationInformation->getWorkflowForEntity($entity);
-    $current_state = $entity->moderation_state->value ? $workflow->getTypePlugin()->getState($entity->moderation_state->value) : $workflow->getTypePlugin()->getInitialState();
+    $current_state = $entity->moderation_state->value ? $workflow->getTypePlugin()->getState($entity->moderation_state->value) : $workflow->getTypePlugin()->getInitialState($entity);
 
     // Legal transitions include those that are possible from the current state,
     // filtered by those whose target is legal on this bundle and that the
