@@ -80,6 +80,14 @@ class RouteProvider implements EntityRouteProviderInterface, EntityHandlerInterf
           ],
         ]);
 
+      // Enable admin theme when necessary.
+      if ($entity_type->id() === 'node') {
+        $route->setOption('_node_operation_route', TRUE);
+      }
+      else {
+        $route->setOption('_admin_route', TRUE);
+      }
+
       // Better route matching if the entity type has integer IDs.
       if ($this->getEntityTypeIdKeyType($entity_type) === 'integer') {
         $route->setRequirement($entity_type->id(), '\d+');
