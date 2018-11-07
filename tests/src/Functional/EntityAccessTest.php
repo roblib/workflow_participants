@@ -23,7 +23,7 @@ class EntityAccessTest extends TestBase {
    * Test read access for editors and reviewers.
    */
   public function testReadAccess() {
-    $this->node->setPublished(FALSE);
+    $this->node->setUnpublished();
     $this->node->save();
 
     // Should not have access if not a participant.

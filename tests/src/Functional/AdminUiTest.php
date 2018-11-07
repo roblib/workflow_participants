@@ -184,7 +184,7 @@ class AdminUiTest extends TestBase {
     // Verify redirect to node page if user still has access to view.
     /** @var \Drupal\node\NodeInterface $node */
     $node = \Drupal::entityTypeManager()->getStorage('node')->loadUnchanged($this->node->id());
-    $node->setPublished(TRUE);
+    $node->setPublished();
     $node->moderation_state = 'published';
     $node->save();
     $this->drupalGet($this->node->toUrl());

@@ -41,7 +41,7 @@ class AdminUiNotificationsTest extends TestBase {
     // Add a notification.
     $this->drupalGet('admin/config/workflow/notifications/add');
     $edit = [
-      'id' => Unicode::strtolower($this->randomMachineName()),
+      'id' => mb_strtolower($this->randomMachineName()),
       'label' => $this->randomString(),
       'transitions[create_new_draft]' => TRUE,
       'transitions[archive]' => TRUE,

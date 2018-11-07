@@ -69,7 +69,7 @@ class WorkflowParticipantsForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $entity = &$this->entity;
     parent::save($form, $form_state);
-    drupal_set_message($this->t('Saved the workflow participants for %label.', [
+    $this->messenger()->addMessage($this->t('Saved the workflow participants for %label.', [
       '%label' => $entity->getModeratedEntity()->label(),
     ]));
 
@@ -150,7 +150,7 @@ class WorkflowParticipantsForm extends ContentEntityForm {
       }
     }
     $form_state->setValue('reviewers', $reviewers);
-    drupal_set_message(t('You have been removed as a reviewer.'));
+    $this->messenger()->addMessage(t('You have been removed as a reviewer.'));
     // Redirect to canonical view. Since access may now be denied, this is
     // checked again post-save.
     $form_state->setRedirectUrl($this->entity->getModeratedEntity()->toUrl());
