@@ -7,7 +7,9 @@ use Drupal\content_moderation\StateTransitionValidationInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\workflows\StateInterface;
 use Drupal\workflows\TransitionInterface;
+use Drupal\workflows\WorkflowInterface;
 
 /**
  * Decorated state transition validation service.
@@ -97,6 +99,24 @@ class StateTransitionValidation implements StateTransitionValidationInterface {
     });
 
     return $transitions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isTransitionValid(WorkflowInterface $workflow, StateInterface $original_state, StateInterface $new_state, AccountInterface $user, ContentEntityInterface $entity = NULL) {
+    // We can only make a determination if we have the entity, otherwise we
+    // won't be able to reference the participants.
+    if ($entity) {
+      // As this may be occurring during validation, the moderation state on the
+      // entity may be the new state, rather than the current state, so make
+      // sure we're working with the current version.
+      $original_entity = $entity->isNew() ? $entity : $this->entityTypeManager->getStorage($entity->getEntityTypeId())->loadRevision($entity->getLoadedRevisionId());
+      $transition = $workflow->getTypePlugin()->getTransitionFromStateToState($original_state->id(), $new_state->id());
+      return in_array($transition->id(), array_keys($this->getValidTransitions($original_entity, $user)));
+    }
+
+    return FALSE;
   }
 
 }
