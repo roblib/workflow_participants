@@ -4,7 +4,7 @@ description: Allows for per-entity workflow participants (editors and reviewers)
 core: 8.x
 package: Content moderation
 dependencies:
-  - content_moderation:content_moderation
+  - drupal:content_moderation
   - dynamic_entity_reference:dynamic_entity_reference
   # @todo Remove hard-coded node dependency.
   - drupal:node
