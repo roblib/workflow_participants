@@ -1,7 +1,7 @@
 {
-  "name": "drupal/workflow_participants",
+  "name": "islandora-rdm/workflow_participants",
   "type": "drupal-module",
-  "description": "Allows for per-entity workflow participants (editors and reviewers) to be assigned.",
+  "description": "Fork of Drupal.org project because ansible doesn't work well with Drupal patches. Allows for per-entity workflow participants (editors and reviewers) to be assigned.",
   "keywords": ["Drupal"],
   "license": "GPL-2.0+",
   "homepage": "https://www.drupal.org/project/workflow_participants",
