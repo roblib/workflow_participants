@@ -9,11 +9,12 @@ use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
+use Drupal\content_moderation\Access\LatestRevisionCheck;
 
 /**
  * Allow access to the latest version tab for editors and reviewers.
  */
-class LatestVersionCheck implements AccessInterface {
+class LatestVersionCheck extends LatestRevisionCheck implements AccessInterface {
 
   /**
    * The content moderation latest version access service.
